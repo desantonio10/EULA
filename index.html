@@ -54,7 +54,7 @@
             margin-bottom: 8px;
             font-size: 14px;
             opacity: 0;
-            animation: fadeIn 0.2s forwards;
+            animation: fadeIn 0.3s forwards;
         }
 
         @keyframes fadeIn {
@@ -345,7 +345,7 @@
             </div>
 
             <div class="info-card">
-                <p><b>📅 Data:</b> 24 Novembre - ore 19:00</p>
+                <p><b>📅 Data:</b> 14 Novembre - ore 18:00</p>
                 <p><b>⛪ Chiesa:</b> [Inserisci Nome Chiesa]</p>
                 <p><b>🍕 Festeggiamenti:</b> [Inserisci Nome Ristorante]</p>
             </div>
@@ -367,7 +367,7 @@
             const loader = document.getElementById('loader-screen');
             let delay = 0;
 
-            // Stampa i 7 log distanziati di 1100ms (totale ~6.6 secondi)
+            // Stampa i 7 log distanziati di 1800ms (1.8 secondi a riga per una lettura ottimale)
             logs.forEach((logText, index) => {
                 setTimeout(() => {
                     const p = document.createElement('p');
@@ -375,10 +375,10 @@
                     p.innerText = logText;
                     loader.appendChild(p);
                 }, delay);
-                delay += 1100;
+                delay += 1800;
             });
 
-            // Attesa finale + sfumatura fino a raggiungere 10 secondi esatti
+            // Attesa finale + sfumatura fino a completare 15 secondi esatti
             setTimeout(() => {
                 loader.style.transition = 'opacity 1s ease';
                 loader.style.opacity = '0';
@@ -386,7 +386,7 @@
                     loader.style.display = 'none';
                     document.getElementById('main-card').style.display = 'block';
                 }, 1000);
-            }, 8000);
+            }, 14000);
         }
 
         window.onload = runLoader;
@@ -440,10 +440,10 @@
 
         function startCountdown() {
             const targetYear = new Date().getFullYear();
-            let targetDate = new Date(`November 24, ${targetYear} 19:00:00`).getTime();
+            let targetDate = new Date(`November 14, ${targetYear} 18:00:00`).getTime();
 
             if (new Date().getTime() > targetDate) {
-                targetDate = new Date(`November 24, ${targetYear + 1} 19:00:00`).getTime();
+                targetDate = new Date(`November 14, ${targetYear + 1} 18:00:00`).getTime();
             }
 
             const timerInterval = setInterval(() => {
