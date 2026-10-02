@@ -4,155 +4,244 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accordo di Licenza - Ruolo Padrino v2026</title>
+    <!-- Libreria gratuita per i coriandoli -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-green: #10b981;
+            --accent-green-hover: #059669;
+            --accent-red: #ef4444;
+            --border-color: #334155;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
         }
+
         .container {
-            background: white;
+            background: var(--card-bg);
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             max-width: 600px;
             width: 100%;
             text-align: center;
+            position: relative;
             overflow: hidden;
+            border: 1px solid var(--border-color);
         }
+
+        /* Shake animation quando tenta di rifiutare */
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
         h1 {
-            font-size: 22px;
-            color: #2c3e50;
+            font-size: 24px;
             margin-bottom: 5px;
+            background: linear-gradient(135deg, #a7f3d0, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
         .subtitle {
             font-size: 14px;
-            color: #7f8c8d;
+            color: var(--text-secondary);
             margin-bottom: 20px;
         }
+
+        .tos-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--accent-green);
+            width: 0%;
+            border-radius: 2px;
+            transition: width 0.1s;
+            margin-bottom: 8px;
+        }
+
         .tos-box {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            height: 160px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            height: 200px;
             overflow-y: scroll;
             text-align: left;
             padding: 15px;
             font-size: 13px;
-            color: #555;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            color: #cbd5e1;
+            line-height: 1.6;
         }
+
         .btn-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 15px;
             margin-top: 25px;
-            min-height: 100px;
+            min-height: 120px;
             flex-wrap: wrap;
         }
+
         .btn {
             border: none;
-            padding: 12px 20px;
+            padding: 14px 24px;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s ease-in-out;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
+
         .btn-accept {
-            background-color: #2ecc71;
+            background-color: var(--accent-green);
             color: white;
             font-size: 16px;
         }
+
         .btn-accept:hover {
-            background-color: #27ae60;
+            background-color: var(--accent-green-hover);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
         }
+
         .btn-deny {
-            background-color: #e74c3c;
+            background-color: var(--accent-red);
             color: white;
             font-size: 14px;
         }
-        .btn-deny:hover {
-            background-color: #c0392b;
-        }
+
         .sub-text {
             font-size: 10px;
             display: block;
             font-weight: normal;
             opacity: 0.8;
+            margin-top: 3px;
         }
+
+        /* Timbro di Approvato */
+        .stamp {
+            display: none;
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-12deg) scale(2);
+            border: 5px solid #ef4444;
+            color: #ef4444;
+            font-size: 32px;
+            font-weight: 900;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            border-radius: 10px;
+            opacity: 0;
+            pointer-events: none;
+            animation: stampAnim 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            z-index: 10;
+        }
+
+        @keyframes stampAnim {
+            to {
+                opacity: 0.85;
+                transform: translate(-50%, -50%) rotate(-12deg) scale(1);
+            }
+        }
+
         #success-message {
             display: none;
             margin-top: 20px;
-            padding: 20px;
-            background: #e8f8f5;
-            border: 1px solid #a3e4d7;
+            padding: 25px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 12px;
+            color: #a7f3d0;
+            text-align: left;
+        }
+
+        #success-message h2 {
+            text-align: center;
+            margin-top: 0;
+            color: #10b981;
+        }
+
+        .info-card {
+            background: #0f172a;
+            padding: 12px 15px;
             border-radius: 8px;
-            color: #117a65;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
         }
     </style>
 </head>
 <body>
 
     <div class="container" id="main-card">
+        <div class="stamp" id="stamp">APPROVATO</div>
+
         <div id="form-content">
-            <h1>📜 Accordo di Licenza per Utente Finale (EULA)</h1>
-            <div class="subtitle">Aggiornamento obbligatorio: Incarico Padrino di Cresima</div>
+            <h1>📜 EULA - Contratto Padrino v2026</h1>
+            <div class="subtitle">Aggiornamento Obbligatorio di Licenza</div>
 
-            <div class="tos-box">
-                <p><strong>1. ACCETTAZIONE IRREVOCABILE DEI TERMINI</strong><br>
-                Scorrendo questo testo o semplicemente posando lo sguardo sullo schermo, l'utente (di seguito denominato "Il Padrino") accetta incondizionatamente di farsi carico di tutte le responsabilità morali, sociali ed economiche connesse alla presente Cresima.</p>
-                
-                <p><strong>2. OBBLIGHI SULL'ABBIGLIAMENTO (DRESS CODE)</strong><br>
-                - Il Padrino si impegna a presentarsi vestito in modo decoroso. Sono severamente vietate tute da ginnastica, ciabatte, Crocs o canottiere.<br>
-                - È caldamente sconsigliato indossare completi più eleganti di quello del Cresimando per evitare di rubare la scena.</p>
+            <div class="tos-container">
+                <div class="progress-bar" id="progress-bar"></div>
+                <div class="tos-box" id="tos-box" onscroll="updateProgress()">
+                    <p><strong>1. ACCETTAZIONE IRREVOCABILE</strong><br>
+                    Scorrendo questo testo o semplicemente posando lo sguardo sullo schermo, l'utente (di seguito "Il Padrino") accetta incondizionatamente di farsi carico di tutte le responsabilità morali ed economiche della Cresima.</p>
+                    
+                    <p><strong>2. DRESS CODE OBBLIGATORIO</strong><br>
+                    - Il Padrino si impegna a presentarsi vestito in modo decoroso. Severamente vietate tute da ginnastica, Crocs o canottiere.<br>
+                    - È proibito essere più elegante del Cresimando per non rubare la scena.</p>
 
-                <p><strong>3. REGOLAMENTO SUL REGALO E REQUISITI MINIMI</strong><br>
-                - Il Padrino riconosce che la formula "il regalo più bello sono io" è stata dichiarata ILLEGALE dal Codice di Famiglia Art. 42.<br>
-                - Oggetti quali strette di mano, pacche sulla spalla, penne a sfera usate o buoni sconto scaduti non verranno considerati regali validi.<br>
-                - Buste contenenti banconote da 5€ verranno restituite al mittente con nota di biasimo.</p>
+                    <p><strong>3. REGOLAMENTO REGALO</strong><br>
+                    - La frase "Il regalo più bello sono io" è illegale ai sensi dell'Art. 42 del Codice di Famiglia.<br>
+                    - Strette di mano, pacche sulla spalla o penne usate non costituiscono regalo valido.<br>
+                    - Buste da 5€ verranno restituite con nota di biasimo.</p>
 
-                <p><strong>4. COMPORTAMENTO DURANTE LA CERIMONIA</strong><br>
-                - Il Padrino si impegna a non controllare lo score della partita di calcio o le notizie durante l'omelia.<br>
-                - È fatto assoluto divieto di intonare cori da stadio, fare battute ad alta voce o addormentarsi in prima fila.</p>
+                    <p><strong>4. COMPORTAMENTO IN CHIESA</strong><br>
+                    - Vietato controllare i risultati delle partite durante l'omelia.<br>
+                    - Vietato addormentarsi in prima fila o intonare cori da stadio.</p>
 
-                <p><strong>5. GESTIONE DEL RINFRESCO E DEL CIBO</strong><br>
-                - Il Padrino garantisce una presenza attiva al buffet, ma si impegna a lasciar mangiare anche gli altri invitati.<br>
-                - L'accumulo clandestino di tartine e pizzette nelle tasche della giacca è tollerato solo dopo la terza ora di ricevimento.</p>
+                    <p><strong>5. GESTIONE RINFRESCO</strong><br>
+                    - Il Padrino garantisce presenza al buffet, lasciando mangiare anche gli altri.<br>
+                    - L'accumulo clandestino di pizzette nelle tasche è tollerato solo dopo la terza ora.</p>
 
-                <p><strong>6. CLAUSOLA ANTI-FOTO IMBARAZZANTI</strong><br>
-                Il Padrino autorizza la pubblicazione di foto di gruppo, a patto di non fare facce strane, occhi chiusi o corna dietro la testa del Cresimando durante lo scatto ufficiale.</p>
+                    <p><strong>6. CLAUSOLA ANTI-SCUSE</strong><br>
+                    Scuse come "mi è scappato il gatto" o "devo lavare i capelli" comportano la perdita automatica della fetta di torta.</p>
 
-                <p><strong>7. REQUISITI TECNICI E INFRASTRUTTURA</strong><br>
-                Il Padrino dichiara di possedere un dispositivo mobile funzionante, una connessione internet attiva e la capacità di seguire le indicazioni GPS senza perdersi nel tragitto chiesa-ristorante.</p>
-
-                <p><strong>8. TENTATIVI DI ELUSIONE E DISSOCIAZIONE</strong><br>
-                Eventuali tentativi di rifiutare l'incarico adducendo scuse quali "ho un impegno", "devo lavare i capelli" o "mi è scappato il gatto" non avranno alcun valore legale e comporteranno la perdita del posto al tavolo dei dolci.</p>
-
-                <p><strong>9. FORO COMPETENTE E RISOLUZIONE CONTROVERSIE</strong><br>
-                Per qualsiasi controversia relativa all'organizzazione della festa, il Foro Competente sarà esclusivamente il tavolo dei dolci, presieduto dalla Nonna.</p>
-
-                <p><strong>10. PRIVACY E SBLOCCO COORDINATE</strong><br>
-                I dati sensibili relativi alla festa (luogo, orario e menu) sono crittografati. Per decifrarli è necessario premere il tasto verde di accettazione.</p>
+                    <p><strong>7. FORO COMPETENTE</strong><br>
+                    Per qualsiasi controversia, il Foro Competente è il tavolo dei dolci, presieduto dalla Nonna.</p>
+                </div>
             </div>
 
-            <p><b>Sei pronto a confermare il tuo incarico?</b></p>
+            <p><b>Accetti ufficialmente l'incarico?</b></p>
 
             <div class="btn-wrapper">
-                <!-- Tasto Accetta -->
                 <button id="accept-btn" class="btn btn-accept" onclick="acceptRole()">
                     ACCETTO I TERMINI
                 </button>
 
-                <!-- Tasto Rifiuta con testo in piccolo -->
                 <button id="deny-btn" class="btn btn-deny" onclick="shrinkDenyButton()">
                     RIFIUTO
                     <span class="sub-text" id="sub-deny">(assolutamente da non premere)</span>
@@ -160,13 +249,15 @@
             </div>
         </div>
 
-        <!-- Schermata di successo -->
         <div id="success-message">
-            <h2>🎉 CONTRATTO FIRMATO CON SUCCESSO! 🎉</h2>
-            <p>Sapevo che avresti fatto la scelta giusta (anche perché non avevi scelta)!</p>
-            <p><b>📅 Data:</b> [Inserisci la data della Cresima]</p>
-            <p><b>⛪ Chiesa:</b> [Inserisci nome e luogo della chiesa]</p>
-            <p><b>🍕 Ristorante:</b> [Inserisci dettagli festa]</p>
+            <h2>🎉 CONTRATTO FIRMATO! 🎉</h2>
+            <p style="text-align: center;">Accettazione registrata nei sistemi centrali.</p>
+            
+            <div class="info-card">
+                <p><b>📅 Data:</b> [Inserisci la Data]</p>
+                <p><b>⛪ Chiesa:</b> [Inserisci Nome Chiesa e Luogo]</p>
+                <p><b>🍕 Festeggiamenti:</b> [Inserisci Nome Ristorante/Locale]</p>
+            </div>
         </div>
     </div>
 
@@ -175,47 +266,82 @@
         let denyScale = 1;
         let clickCount = 0;
 
-        // Frasi ironiche che compaiono se prova comunque a premere Rifiuto
         const denyMessages = [
             "(assolutamente da non premere)",
             "(ma sei sicuro?)",
             "(guarda che si rimpicciolisce)",
             "(dai, premi il tasto verde!)",
             "(stai solo perdendo tempo...)",
-            "(impossibile rifiutare)",
+            "(errore di sistema!)",
             "..."
         ];
+
+        // Aggiorna barra di scorrimento del testo
+        function updateProgress() {
+            const box = document.getElementById('tos-box');
+            const maxScroll = box.scrollHeight - box.clientHeight;
+            const percentage = (box.scrollTop / maxScroll) * 100;
+            document.getElementById('progress-bar').style.width = percentage + '%';
+        }
 
         function shrinkDenyButton() {
             clickCount++;
 
-            // Riduci il pulsante di rifiuto del 20% ad ogni click
+            // Fai tremare la scheda per effetto errore
+            const card = document.getElementById('main-card');
+            card.classList.add('shake');
+            setTimeout(() => card.classList.remove('shake'), 400);
+
             denyScale -= 0.2;
-            // Ingrandisci il pulsante di accettazione del 35% ad ogni click
             acceptScale += 0.35;
 
             const acceptBtn = document.getElementById('accept-btn');
             const denyBtn = document.getElementById('deny-btn');
             const subDeny = document.getElementById('sub-deny');
 
-            // Applica la scala di ingrandimento/rimpicciolimento
             acceptBtn.style.transform = `scale(${acceptScale})`;
             denyBtn.style.transform = `scale(${denyScale})`;
 
-            // Cambia la scritta sotto il tasto Rifiuto
             if (clickCount < denyMessages.length) {
                 subDeny.innerText = denyMessages[clickCount];
             }
 
-            // Se diventa microscopicamente piccolo, fai sparire il tasto Rifiuto
             if (denyScale <= 0.1) {
                 denyBtn.style.display = 'none';
             }
         }
 
         function acceptRole() {
-            document.getElementById('form-content').style.display = 'none';
-            document.getElementById('success-message').style.display = 'block';
+            // Effetto Timbro
+            const stamp = document.getElementById('stamp');
+            stamp.style.display = 'block';
+
+            // Spara i coriandoli!
+            confetti({
+                particleCount: 120,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            setTimeout(() => {
+                document.getElementById('form-content').style.display = 'none';
+                stamp.style.display = 'none';
+                document.getElementById('success-message').style.display = 'block';
+                
+                // Seconda scarica di coriandoli per la schermata finale
+                confetti({
+                    particleCount: 80,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 80,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+            }, 1000);
         }
     </script>
 
