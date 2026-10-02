@@ -31,6 +31,36 @@
             box-sizing: border-box;
         }
 
+        /* Schermata Terminale / Matrix iniziale */
+        #loader-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #050505;
+            color: #10b981;
+            font-family: "Courier New", Courier, monospace;
+            padding: 30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .log-line {
+            margin-bottom: 8px;
+            font-size: 14px;
+            opacity: 0;
+            animation: fadeIn 0.2s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
         .container {
             background: var(--card-bg);
             padding: 30px;
@@ -42,9 +72,9 @@
             position: relative;
             overflow: hidden;
             border: 1px solid var(--border-color);
+            display: none; /* Nascosta finché non finisce il loader */
         }
 
-        /* Shake animation quando tenta di rifiutare */
         .shake {
             animation: shake 0.4s ease-in-out;
         }
@@ -142,7 +172,6 @@
             margin-top: 3px;
         }
 
-        /* Timbro di Approvato */
         .stamp {
             display: none;
             position: absolute;
@@ -194,7 +223,6 @@
             text-align: left;
         }
 
-        /* Stili per il Countdown */
         .countdown-title {
             font-size: 13px;
             text-transform: uppercase;
@@ -236,6 +264,10 @@
 </head>
 <body>
 
+    <!-- Schermata Terminale / Loader -->
+    <div id="loader-screen"></div>
+
+    <!-- Scheda Principale -->
     <div class="container" id="main-card">
         <div class="stamp" id="stamp">APPROVATO</div>
 
@@ -321,6 +353,44 @@
     </div>
 
     <script>
+        const logs = [
+            "> Inizializzazione sistema Cresima v2026...",
+            "> Scansione database parenti in corso...",
+            "> Analisi livello di pazienza... [ECCELLENTE]",
+            "> Verifica disponibilita al rinfresco... [100%]",
+            "> Calcolo budget regalo consigliato... [ERRORE: Cifra troppo alta]",
+            "> Trovato candidato perfetto per il ruolo di PADRINO!",
+            "> Caricamento Contratto di Licenza Obbligatorio..."
+        ];
+
+        function runLoader() {
+            const loader = document.getElementById('loader-screen');
+            let delay = 0;
+
+            // Stampa i 7 log distanziati di 1100ms (totale ~6.6 secondi)
+            logs.forEach((logText, index) => {
+                setTimeout(() => {
+                    const p = document.createElement('p');
+                    p.className = 'log-line';
+                    p.innerText = logText;
+                    loader.appendChild(p);
+                }, delay);
+                delay += 1100;
+            });
+
+            // Attesa finale + sfumatura fino a raggiungere 10 secondi esatti
+            setTimeout(() => {
+                loader.style.transition = 'opacity 1s ease';
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.getElementById('main-card').style.display = 'block';
+                }, 1000);
+            }, 8000);
+        }
+
+        window.onload = runLoader;
+
         let acceptScale = 1;
         let denyScale = 1;
         let clickCount = 0;
@@ -368,13 +438,10 @@
             }
         }
 
-        // Funzione per il calcolo del conto alla rovescia
         function startCountdown() {
-            // Data target: 24 Novembre ore 19:00
             const targetYear = new Date().getFullYear();
             let targetDate = new Date(`November 24, ${targetYear} 19:00:00`).getTime();
 
-            // Se per caso la data fosse già passata nell'anno corrente, punta al prossimo anno
             if (new Date().getTime() > targetDate) {
                 targetDate = new Date(`November 24, ${targetYear + 1} 19:00:00`).getTime();
             }
@@ -419,7 +486,6 @@
                 stamp.style.display = 'none';
                 document.getElementById('success-message').style.display = 'block';
                 
-                // Fai partire il countdown attivo
                 startCountdown();
 
                 confetti({
